@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { API_BASE_URL } from "./config.js";
+import { createMovie } from "./movieAPI.jsx"
 
 export default function CreateMovieForm () {
     const [title, setTitle] = useState('')
@@ -23,36 +23,22 @@ export default function CreateMovieForm () {
         setWatched(event.target.checked)
     }
 
-    const handleCreateMovie = () => {
-        const movieData = {
-            title: title,
-            description: description,
-            release_year: year,
-            watched: watched
-        }
-        // TODO: Implement this asynchronously
-        fetch(API_BASE_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(movieData)
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response from the backend
-                console.log('Movie created:', data)
+    const movieData = {
+        title: title,
+        description: description,
+        release_year: year,
+        watched: watched
+    }
 
-                // Reset the form fields
-                setTitle('')
-                setDescription('')
-                setYear('')
-                setWatched(false)
-            })
-            .catch(error => {
-                // Handle any errors
-                console.error('Error creating movie:', error)
-            })
+    const resetFields = () => {
+        setTitle('')
+        setDescription('')
+        setYear('')
+        setWatched(false)
+    }
+
+    function handleCreateMovie () {
+        return createMovie(movieData)
     }
 
     return (
@@ -69,6 +55,7 @@ export default function CreateMovieForm () {
             <label htmlFor="watched">Watched:</label>
             <input type="checkbox" id="watched" checked={watched} onChange={handleWatchedChange} />
 
+            <button onClick={resetFields}>Reset fields</button>
             <button onClick={handleCreateMovie}>Create</button>
         </div>
     )
