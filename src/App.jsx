@@ -1,12 +1,22 @@
 import "./styles.css"
-import { Table } from "./movieTable.jsx"
+import * as React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { AllMovies } from "./allMovies.jsx"
+import { NavBar } from "./navBar.jsx"
+import { Search } from "./searchPage.jsx"
+
 
 export default function App() {
     return (
-        <div>
-            <h1>Movie Tracker v1</h1>
-            <Table />
-        </div>
+        <Router>
+            <div>
+                <NavBar />
+                <Routes>
+                    <Route path="/all-movies" element={<AllMovies />} />
+                    <Route path="/search-movies" element={<Search />} />
+                </Routes>
+            </div>
+        </Router>
     )
 }
 
