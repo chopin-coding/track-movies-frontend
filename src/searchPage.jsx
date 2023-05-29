@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getByFields } from "./movieAPI";
 import { Table } from "./movieTable";
-import { PropTypes } from "prop-types";
 
 export function Search() {
   const [searchType, setSearchType] = useState("");
@@ -49,6 +48,7 @@ export function Search() {
       nextPage = currentPage + 1;
     }
     setCurrentPage(nextPage);
+    handleSearch();
   };
 
   const handleSearch = async () => {
@@ -59,13 +59,12 @@ export function Search() {
 
       if (searchType === "fields") {
         const skip = (currentPage - 1) * resultsPerPage;
-        const limit = resultsPerPage;
         results = await getByFields(
           titleValue,
           releaseYearValue,
           watchedValue,
           skip,
-          limit
+          resultsPerPage
         );
         total = results.count;
         results = results.movies;
@@ -85,9 +84,9 @@ export function Search() {
 
   useEffect(() => {
     handleSearch();
-  }, [currentPage, resultsPerPage]); // Trigger search when page or resultsPerPage changes
+  }, [currentPage, resultsPerPage]);
 
-  const searchByFields = () => {
+  function SearchByFieldsComponent() {
     return (
       <div>
         <label>
@@ -116,9 +115,9 @@ export function Search() {
         </label>
       </div>
     );
-  };
+  }
 
-  const searchByID = () => {
+  function SearchByIDComponent() {
     return (
       <div>
         <label>
@@ -127,9 +126,30 @@ export function Search() {
         </label>
       </div>
     );
-  };
+  }
 
-  const searchTypeSelection = () => {
+  function PaginationComponent() {
+    return (
+      <div className="pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange("prev")}
+        >
+          Previous
+        </button>
+        <span>Current Page {currentPage}</span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange("next")}
+        >
+          Next
+        </button>
+        <span>Total Pages {totalPages}</span>
+      </div>
+    );
+  }
+
+  function SearchTypeSelectionComponent() {
     return (
       <div>
         <label htmlFor="search-type">Search by:</label>
@@ -143,52 +163,41 @@ export function Search() {
           <option value="id">ID</option>
         </select>
 
-        {searchType === "fields" && searchByFields()}
+        {searchType === "fields" && <SearchByFieldsComponent />}
 
-        {searchType === "id" && searchByID()}
+        {searchType === "id" && <SearchByIDComponent />}
       </div>
     );
-  };
+  }
+
+  function ResultsPerPageRender() {
+    return (
+      <div className="results-per-page">
+        <label>
+          Results per page:
+          <select value={resultsPerPage} onChange={handleResultsPerPageChange}>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
       <div>
-        {searchTypeSelection()}
+        <SearchTypeSelectionComponent />
         <button onClick={handleSearch}>Search</button>
       </div>
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          <Table data={searchResults} onPageChange={handlePageChange} />
-          <div className="pagination">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              Previous
-            </button>
-            <span>{currentPage}</span>
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-          <div className="results-per-page">
-            <label>
-              Results per page:
-              <select
-                value={resultsPerPage}
-                onChange={handleResultsPerPageChange}
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-            </label>
-          </div>
+          <Table data={searchResults} />
+          <PaginationComponent />
+          <ResultsPerPageRender />
         </>
       )}
     </div>
