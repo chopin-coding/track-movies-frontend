@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useTable } from "react-table";
 import { PropTypes } from "prop-types";
 
-export function Table({ data, onPageChange }) {
+export function Table({ data, onPageChange, pageCount }) {
   const [resultsPerPage, setResultsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
 
   const handleResultsPerPageChange = (event) => {
     const perPage = Number(event.target.value);
@@ -56,7 +57,7 @@ export function Table({ data, onPageChange }) {
     useTable({ columns, data });
 
   return (
-    <div className="movie-table">
+    <div className="container">
       <div className="results-per-page">
         <label>
           Results per page:
@@ -108,5 +109,5 @@ export function Table({ data, onPageChange }) {
 
 Table.propTypes = {
   data: PropTypes.array.isRequired,
-  onPageChange: PropTypes.function.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 };
