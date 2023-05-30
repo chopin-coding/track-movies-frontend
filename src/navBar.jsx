@@ -10,9 +10,6 @@ export function NavBar() {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/search-movies">Search Movies</Link>
-        </li>
-        <li>
           <Link to="/about">About</Link>
         </li>
       </ul>

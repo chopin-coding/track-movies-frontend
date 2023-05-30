@@ -28,24 +28,14 @@ export function createMovie(movieData) {
     });
 }
 
-export function getByFields(
-  title = null,
-  release_year = null,
-  watched = null,
-  skip = 0,
-  limit = 0
-) {
-  return fetch(
-    API_BASE_URL +
-      "?" +
-      new URLSearchParams({
-        title: title,
-        release_year: release_year,
-        watched: watched,
-        skip: skip,
-        limit: limit,
-      })
-  )
+export function getByFields(searchParams) {
+  for (const key in searchParams) {
+    if (searchParams[key] === null) {
+      delete searchParams[key];
+    }
+  }
+
+  return fetch(API_BASE_URL + "?" + new URLSearchParams(searchParams))
     .then((response) => {
       if (response.ok) {
         return response.json();

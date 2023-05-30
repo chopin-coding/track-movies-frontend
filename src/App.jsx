@@ -10,7 +10,7 @@ export default function App() {
       <div>
         <NavBar />
         <Routes>
-          <Route path="/search-movies" element={<Search />} />
+          <Route path="/" element={<Search />} />
         </Routes>
       </div>
     </Router>

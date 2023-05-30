@@ -5,9 +5,9 @@ import { Table } from "./movieTable";
 export function Search() {
   const [searchType, setSearchType] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [titleValue, setTitleValue] = useState("");
-  const [releaseYearValue, setReleaseYearValue] = useState("");
-  const [watchedValue, setWatchedValue] = useState("");
+  const [titleValue, setTitleValue] = useState(null);
+  const [releaseYearValue, setReleaseYearValue] = useState(null);
+  const [watchedValue, setWatchedValue] = useState(null);
   const [idValue, setIdValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -19,7 +19,9 @@ export function Search() {
   };
 
   const handleReleaseYearValueChange = (event) => {
-    setReleaseYearValue(event.target.value);
+    const value = event.target.value;
+    const intValue = value ? parseInt(value, 10) : null;
+    setReleaseYearValue(intValue);
   };
 
   const handleWatchedValueChange = (event) => {
@@ -51,26 +53,40 @@ export function Search() {
     handleSearch();
   };
 
-  const handleSearch = async () => {
+  const searchParameters = () => {
+    const skipValue = (currentPage - 1) * resultsPerPage;
+    let filteredValues = {
+      title: null,
+      release_year: null,
+      watched: null,
+      skip: skipValue,
+      limit: resultsPerPage,
+    };
+
+    if (typeof titleValue === "string" && titleValue.length >= 2) {
+      filteredValues["title"] = titleValue;
+    }
+
+    if (Number.isInteger(releaseYearValue)) {
+      filteredValues["release_year"] = releaseYearValue;
+    }
+
+    if (typeof watchedValue === "boolean") {
+      filteredValues["watched"] = watchedValue;
+    }
+
+    console.log(filteredValues);
+    return filteredValues;
+  };
+
+  const handleFieldSearch = async () => {
     try {
       setLoading(true);
       let results = [];
       let total = 0;
-
-      if (searchType === "fields") {
-        const skip = (currentPage - 1) * resultsPerPage;
-        results = await getByFields(
-          titleValue,
-          releaseYearValue,
-          watchedValue,
-          skip,
-          resultsPerPage
-        );
-        total = results.count;
-        results = results.movies;
-      } else if (searchType === "id") {
-        // Handle search by ID
-      }
+      results = await getByFields(searchParameters());
+      total = results.count;
+      results = results.movies;
 
       setSearchResults(results);
       setTotalPages(Math.ceil(total / resultsPerPage));
@@ -82,51 +98,17 @@ export function Search() {
     }
   };
 
+  const handleSearch = async () => {
+    if (searchType === "fields") {
+      await handleFieldSearch();
+    } else if (searchType === "id") {
+      // Handle search by ID
+    }
+  };
+
   useEffect(() => {
     handleSearch();
   }, [currentPage, resultsPerPage]);
-
-  function SearchByFieldsComponent() {
-    return (
-      <div>
-        <label>
-          Title
-          <input
-            type="text"
-            value={titleValue}
-            onChange={handleTitleValueChange}
-          />
-        </label>
-        <label>
-          Year
-          <input
-            type="text"
-            value={releaseYearValue}
-            onChange={handleReleaseYearValueChange}
-          />
-        </label>
-        <label>
-          Watched?
-          <select value={watchedValue} onChange={handleWatchedValueChange}>
-            <option value="">Select</option>
-            <option value="true">True</option>
-            <option value="false">False</option>
-          </select>
-        </label>
-      </div>
-    );
-  }
-
-  function SearchByIDComponent() {
-    return (
-      <div>
-        <label>
-          ID
-          <input type="text" value={idValue} onChange={handleIdValueChange} />
-        </label>
-      </div>
-    );
-  }
 
   function PaginationComponent() {
     return (
@@ -149,27 +131,6 @@ export function Search() {
     );
   }
 
-  function SearchTypeSelectionComponent() {
-    return (
-      <div>
-        <label htmlFor="search-type">Search by:</label>
-        <select
-          id="search-type"
-          value={searchType}
-          onChange={handleSearchTypeChange}
-        >
-          <option value="">Select</option>
-          <option value="fields">Fields</option>
-          <option value="id">ID</option>
-        </select>
-
-        {searchType === "fields" && <SearchByFieldsComponent />}
-
-        {searchType === "id" && <SearchByIDComponent />}
-      </div>
-    );
-  }
-
   function ResultsPerPageRender() {
     return (
       <div className="results-per-page">
@@ -188,7 +149,65 @@ export function Search() {
   return (
     <div className="container">
       <div>
-        <SearchTypeSelectionComponent />
+        <div>
+          <label htmlFor="search-type">Search by:</label>
+          <select
+            id="search-type"
+            value={searchType}
+            onChange={handleSearchTypeChange}
+          >
+            <option value="">Select</option>
+            <option value="fields">Fields</option>
+            <option value="id">ID</option>
+          </select>
+
+          {searchType === "fields" && (
+            <div>
+              <label>
+                Title
+                <input
+                  type="text"
+                  value={titleValue}
+                  onChange={handleTitleValueChange}
+                  placeholder="Movie title"
+                />
+              </label>
+              <label>
+                Year
+                <input
+                  type="text"
+                  value={releaseYearValue}
+                  onChange={handleReleaseYearValueChange}
+                  placeholder="Release year"
+                />
+              </label>
+              <label>
+                Watched?
+                <select
+                  value={watchedValue}
+                  onChange={handleWatchedValueChange}
+                >
+                  <option value="">Select</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </label>
+            </div>
+          )}
+
+          {searchType === "id" && (
+            <div>
+              <label>
+                ID
+                <input
+                  type="text"
+                  value={idValue}
+                  onChange={handleIdValueChange}
+                />
+              </label>
+            </div>
+          )}
+        </div>
         <button onClick={handleSearch}>Search</button>
       </div>
       {loading ? (
