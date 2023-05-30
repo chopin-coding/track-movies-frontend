@@ -4,7 +4,7 @@
     text-align: center;
     background: #1abc9c;
     color: white;
-    font-size: 30px;
+    font-size: 20px;
 }
 
 body {
@@ -12,4 +12,22 @@ body {
     background: #1E1E1E;
     font-family: Inter, sans-serif;
     color: #F8F1F1;
+
+}
+
+table {
+    width: 85%;
+    border-collapse: collapse;
+}
+
+table, th {
+    border: 2px solid;
+}
+
+td {
+    border: 1px solid;
+}
+
+table, th, td {
+    border-color: #333333;
 }

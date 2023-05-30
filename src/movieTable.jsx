@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTable } from "react-table";
 import { PropTypes } from "prop-types";
 
@@ -20,7 +20,12 @@ export function Table({ data }) {
       {
         Header: "Watched",
         accessor: "watched",
+        Cell: ({ value }) => <input type="checkbox" checked={value} readOnly />,
+        propTypes: {
+          value: PropTypes.bool.isRequired,
+        },
       },
+
       {
         Header: "ID",
         accessor: "id",

@@ -25,7 +25,9 @@ export function Search() {
   };
 
   const handleWatchedValueChange = (event) => {
-    setWatchedValue(event.target.value);
+    const value = event.target.value;
+    const boolValue = value === "true"; // Convert string value to boolean
+    setWatchedValue(boolValue);
   };
 
   const handleIdValueChange = (event) => {
@@ -188,8 +190,8 @@ export function Search() {
                   onChange={handleWatchedValueChange}
                 >
                   <option value="">Select</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
                 </select>
               </label>
             </div>
