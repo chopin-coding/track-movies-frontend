@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getByFields, deleteByID } from "./movieAPI";
+import { getByFields, deleteByID, getByID } from "./movieAPI";
 import { Table } from "./movieTable";
-import { bool } from "prop-types";
 
 export function Search() {
   const [searchType, setSearchType] = useState("");
@@ -14,6 +13,7 @@ export function Search() {
   const [resultsPerPage, setResultsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchFailMessage, setSearchFailMessage] = useState("");
 
   const handleTitleValueChange = (event) => {
     setTitleValue(event.target.value);
@@ -67,7 +67,7 @@ export function Search() {
       : console.log("Delete unsuccessful."); // replace with a notification
   };
 
-  const searchParameters = () => {
+  const getSearchParameters = () => {
     const skipValue = (currentPage - 1) * resultsPerPage;
     let filteredValues = {
       title: null,
@@ -93,18 +93,99 @@ export function Search() {
     return filteredValues;
   };
 
+  const handleIdSearch = async () => {
+    if (idValue !== "") {
+      try {
+        setLoading(true);
+        let results = [];
+        await getByID(idValue)
+          .then((response) => {
+            if (response.ok) {
+              handleSearchFailMessageChange("");
+              return response.json().then((data) => {
+                results.push(data);
+                setSearchResults(results);
+                setLoading(false);
+              });
+            } else if (response.status === 422) {
+              response.json().then((validationData) => {
+                console.log(validationData.detail[0].msg);
+                handleSearchFailMessageChange(`Please enter a valid ID.`);
+              });
+            } else if (response.status === 404) {
+              response.json().then((validationData) => {
+                console.log(validationData.message);
+                handleSearchFailMessageChange(
+                  "No movies with the given ID was found."
+                );
+              });
+            } else {
+              // Handle other error scenarios
+              throw new Error("Error: " + response.statusText);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching all movies: ", error);
+          });
+        setSearchResults(results);
+        setTotalPages(1);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error occurred during search:", error);
+        setSearchResults([]);
+        setLoading(false);
+      }
+    } else {
+      handleSearchFailMessageChange("Please specify a movie ID.");
+    }
+  };
+
+  const handleSearchFailMessageChange = (message) => {
+    setSearchFailMessage(message);
+  };
+  const SearchFailMessageComponent = () => {
+    return (
+      <div>
+        <label>{searchFailMessage}</label>
+      </div>
+    );
+  };
+
   const handleFieldSearch = async () => {
     try {
       setLoading(true);
       let results = [];
       let total = 0;
-      results = await getByFields(searchParameters());
-      total = results.count;
-      results = results.movies;
+      await getByFields(getSearchParameters()).then((response) => {
+        if (response.ok) {
+          handleSearchFailMessageChange("");
+          return response.json().then((data) => {
+            results = data;
+            total = results.count;
+            results = results.movies;
 
-      setSearchResults(results);
-      setTotalPages(Math.ceil(total / resultsPerPage));
-      setLoading(false);
+            setSearchResults(results);
+            setTotalPages(Math.ceil(total / resultsPerPage));
+            setLoading(false);
+          });
+        } else if (response.status === 422) {
+          response.json().then((validationData) => {
+            console.log(validationData.detail[0].msg);
+            handleSearchFailMessageChange(
+              `${validationData.detail[0].loc[1]}: ${validationData.detail[0].msg}`
+            );
+          });
+        } else if (response.status === 404) {
+          response.json().then((validationData) => {
+            console.log(validationData.message);
+            handleSearchFailMessageChange(
+              "No movies with the given parameters were found."
+            );
+          });
+        } else {
+          throw new Error("Error: " + response.statusText);
+        }
+      });
     } catch (error) {
       console.error("Error occurred during search:", error);
       setSearchResults([]);
@@ -116,7 +197,7 @@ export function Search() {
     if (searchType === "fields") {
       await handleFieldSearch();
     } else if (searchType === "id") {
-      // Handle search by ID
+      await handleIdSearch();
     }
   };
 
@@ -229,6 +310,7 @@ export function Search() {
       ) : (
         <>
           <ResultsPerPageRender />
+          <SearchFailMessageComponent />
           <Table data={searchResults} onDelete={handleDelete} />
           <PaginationComponent />
         </>

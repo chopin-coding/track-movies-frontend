@@ -32,7 +32,12 @@ export function deleteByID(id) {
   try {
     return fetch(API_BASE_URL + id.toString(), { method: "DELETE" }).then(
       (response) => {
-        return response.ok;
+        if (response.ok) {
+          return response.ok;
+        } else {
+          // Handle other error scenarios
+          throw new Error("Error: " + response.statusText);
+        }
       }
     );
   } catch (error) {
@@ -41,52 +46,20 @@ export function deleteByID(id) {
 }
 
 export function getByFields(searchParams) {
+  // remove nulls from the search parameters
   for (const key in searchParams) {
     if (searchParams[key] === null) {
       delete searchParams[key];
     }
   }
-
-  return fetch(API_BASE_URL + "?" + new URLSearchParams(searchParams))
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else if (response.status === 422) {
-        return response.json().then((validationData) => {
-          console.log(validationData.detail[0].msg);
-        });
-      } else if (response.status === 404) {
-        return response.json().then((validationData) => {
-          console.log(validationData.message);
-        });
-      } else {
-        throw new Error("Error: " + response.statusText);
-      }
-    })
-    .catch((error) => {
+  // make the API call
+  return fetch(API_BASE_URL + "?" + new URLSearchParams(searchParams)).catch(
+    (error) => {
       console.error("Error fetching movie by title: ", error);
-    });
+    }
+  );
 }
 
-export function getByID(movieID) {
-  return fetch(API_BASE_URL + movieID)
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else if (response.status === 422) {
-        return response.json().then((validationData) => {
-          console.log(validationData.detail[0].msg);
-        });
-      } else if (response.status === 404) {
-        return response.json().then((validationData) => {
-          console.log(validationData.message);
-        });
-      } else {
-        // Handle other error scenarios
-        throw new Error("Error: " + response.statusText);
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching all movies: ", error);
-    });
+export function getByID(id) {
+  return fetch(API_BASE_URL + id);
 }
