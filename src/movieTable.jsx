@@ -2,7 +2,7 @@ import React from "react";
 import { useTable } from "react-table";
 import { PropTypes } from "prop-types";
 
-export function Table({ data }) {
+export function Table({ data, onDelete }) {
   const columns = React.useMemo(
     () => [
       {
@@ -30,12 +30,25 @@ export function Table({ data }) {
         Header: "ID",
         accessor: "id",
       },
+      {
+        Header: "Actions",
+        Cell: ({ row }) => (
+          <button onClick={() => handleDelete(row)}>Delete</button>
+        ),
+      },
     ],
     []
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
+
+  const handleDelete = (row) => {
+    const { id } = row.original;
+    if (window.confirm(`Delete movie ${id}?`)) {
+      onDelete(id);
+    }
+  };
 
   return (
     <div className="container">
@@ -74,4 +87,5 @@ export function Table({ data }) {
 
 Table.propTypes = {
   data: PropTypes.array.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };

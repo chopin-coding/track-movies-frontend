@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getByFields } from "./movieAPI";
+import { getByFields, deleteByID } from "./movieAPI";
 import { Table } from "./movieTable";
+import { bool } from "prop-types";
 
 export function Search() {
   const [searchType, setSearchType] = useState("");
@@ -26,8 +27,12 @@ export function Search() {
 
   const handleWatchedValueChange = (event) => {
     const value = event.target.value;
-    const boolValue = value === "true"; // Convert string value to boolean
-    setWatchedValue(boolValue);
+    const watchedMapper = {
+      true: true,
+      false: false,
+      select: "select",
+    };
+    setWatchedValue(watchedMapper[value]);
   };
 
   const handleIdValueChange = (event) => {
@@ -53,6 +58,13 @@ export function Search() {
     }
     setCurrentPage(nextPage);
     handleSearch();
+  };
+
+  const handleDelete = (id) => {
+    const deleteResult = deleteByID(id);
+    deleteResult
+      ? console.log("Deleted successfully!") // replace with a notification
+      : console.log("Delete unsuccessful."); // replace with a notification
   };
 
   const searchParameters = () => {
@@ -189,7 +201,7 @@ export function Search() {
                   value={watchedValue}
                   onChange={handleWatchedValueChange}
                 >
-                  <option value="">Select</option>
+                  <option value="select">Select</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </select>
@@ -216,9 +228,9 @@ export function Search() {
         <p>Loading...</p>
       ) : (
         <>
-          <Table data={searchResults} />
-          <PaginationComponent />
           <ResultsPerPageRender />
+          <Table data={searchResults} onDelete={handleDelete} />
+          <PaginationComponent />
         </>
       )}
     </div>

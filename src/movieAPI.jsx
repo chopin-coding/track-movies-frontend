@@ -28,6 +28,18 @@ export function createMovie(movieData) {
     });
 }
 
+export function deleteByID(id) {
+  try {
+    return fetch(API_BASE_URL + id.toString(), { method: "DELETE" }).then(
+      (response) => {
+        return response.ok;
+      }
+    );
+  } catch (error) {
+    console.error("Error occurred during movie deletion:", error);
+  }
+}
+
 export function getByFields(searchParams) {
   for (const key in searchParams) {
     if (searchParams[key] === null) {
