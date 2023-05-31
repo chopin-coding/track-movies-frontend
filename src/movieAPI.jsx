@@ -28,6 +28,25 @@ export function createMovie(movieData) {
     });
 }
 
+export function updateByID(id, updateParameters) {
+  for (const key in updateParameters) {
+    if (updateParameters[key] === null) {
+      delete updateParameters[key];
+    }
+    try {
+      return fetch(API_BASE_URL + id.toString(), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateParameters),
+      });
+    } catch (error) {
+      console.error("Error occurred during movie update:", error);
+    }
+  }
+}
+
 export function deleteByID(id) {
   try {
     return fetch(API_BASE_URL + id.toString(), { method: "DELETE" }).then(

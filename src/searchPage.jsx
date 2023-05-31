@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getByFields, deleteByID, getByID } from "./movieAPI";
+import { getByFields, deleteByID, getByID, updateByID } from "./movieAPI";
 import { Table } from "./movieTable";
 
 export function Search() {
   const [searchType, setSearchType] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [titleValue, setTitleValue] = useState(null);
-  const [releaseYearValue, setReleaseYearValue] = useState(null);
-  const [watchedValue, setWatchedValue] = useState(null);
+  const [titleValue, setTitleValue] = useState("");
+  const [releaseYearValue, setReleaseYearValue] = useState("");
+  const [watchedValue, setWatchedValue] = useState("");
   const [idValue, setIdValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -89,8 +89,13 @@ export function Search() {
       filteredValues["watched"] = watchedValue;
     }
 
-    console.log(filteredValues);
     return filteredValues;
+  };
+
+  const handleUpdate = async (updateParameters) => {
+    const id = updateParameters["id"];
+    delete updateParameters["id"];
+    return await updateByID(id, updateParameters);
   };
 
   const handleIdSearch = async () => {
@@ -311,7 +316,11 @@ export function Search() {
         <>
           <ResultsPerPageRender />
           <SearchFailMessageComponent />
-          <Table data={searchResults} onDelete={handleDelete} />
+          <Table
+            data={searchResults}
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+          />
           <PaginationComponent />
         </>
       )}
