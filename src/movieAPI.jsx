@@ -1,31 +1,17 @@
 import { API_BASE_URL } from "./config.js";
 
 export function createMovie(movieData) {
-  return fetch(API_BASE_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(movieData),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json().then((data) => {
-          console.log("Movie created with ID: ", data.id);
-        });
-      } else if (response.status === 422) {
-        return response.json().then((validationData) => {
-          console.log(validationData.detail[0].msg);
-        });
-      } else {
-        // Handle other error scenarios
-        throw new Error("Error: " + response.statusText);
-      }
-    })
-    .catch((error) => {
-      // Handle any errors
-      console.error("Error creating movie:", error);
+  try {
+    return fetch(API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(movieData),
     });
+  } catch (error) {
+    console.error("Error occurred during movie create API call:", error);
+  }
 }
 
 export function updateByID(id, updateParameters) {
@@ -42,7 +28,7 @@ export function updateByID(id, updateParameters) {
         body: JSON.stringify(updateParameters),
       });
     } catch (error) {
-      console.error("Error occurred during movie update:", error);
+      console.error("Error occurred during movie update API call:", error);
     }
   }
 }

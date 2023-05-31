@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getByFields, deleteByID, getByID, updateByID } from "./movieAPI";
+import {
+  getByFields,
+  deleteByID,
+  getByID,
+  updateByID,
+  createMovie,
+} from "./movieAPI";
 import { Table } from "./movieTable";
 
 export function Search() {
@@ -96,6 +102,10 @@ export function Search() {
     const id = updateParameters["id"];
     delete updateParameters["id"];
     return await updateByID(id, updateParameters);
+  };
+
+  const handleCreate = async (createParameters) => {
+    return await createMovie(createParameters);
   };
 
   const handleIdSearch = async () => {
@@ -320,6 +330,7 @@ export function Search() {
             data={searchResults}
             onDelete={handleDelete}
             onUpdate={handleUpdate}
+            onCreate={handleCreate}
           />
           <PaginationComponent />
         </>

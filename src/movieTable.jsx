@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { useTable } from "react-table";
 import { PropTypes } from "prop-types";
 
-export function Table({ data, onDelete, onUpdate }) {
+export function Table({ data, onDelete, onUpdate, onCreate }) {
   const [selectedMovie, setSelectedMovie] = React.useState(null);
   const [statusMessage, setStatusMessage] = React.useState("");
+
+  const [createMovieDisplay, setCreateMovieDisplay] = React.useState(null);
+  const [createStatusMessage, setCreateStatusMessage] = React.useState("");
 
   const columns = React.useMemo(
     () => [
@@ -62,6 +65,37 @@ export function Table({ data, onDelete, onUpdate }) {
     setSelectedMovie({ id, title, description, release_year, watched });
   };
 
+  const handleNewMovieButton = () => {
+    setCreateMovieDisplay("create overlay active");
+  };
+
+  const handleCreate = (createParameters) => {
+    try {
+      onCreate(createParameters)
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((data) => {
+              handleCreateStatusMessageChange(`Movie created. ID: ${data.id}`);
+            });
+          } else if (response.status === 422) {
+            response.json().then((validationData) => {
+              console.log(validationData.detail[0].msg);
+              handleCreateStatusMessageChange("Invalid create parameters.");
+            });
+          } else {
+            throw new Error(
+              "Error: " + response.status + " " + response.statusText
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating movie: ", error);
+        });
+    } catch (error) {
+      console.log(`Error creating movie: ${error}`);
+    }
+  };
+
   const handleSave = (movie) => {
     try {
       const fixedUpdateParameters = {
@@ -105,8 +139,16 @@ export function Table({ data, onDelete, onUpdate }) {
     setSelectedMovie(null);
   };
 
+  const handleCreateCancel = () => {
+    setCreateMovieDisplay(null);
+  };
+
   const handleStatusMessageChange = (message) => {
     setStatusMessage(message);
+  };
+
+  const handleCreateStatusMessageChange = (message) => {
+    setCreateStatusMessage(message);
   };
 
   function UpdateOverlay({ movie, onSave, onCancel, statusMessage }) {
@@ -191,6 +233,88 @@ export function Table({ data, onDelete, onUpdate }) {
     );
   }
 
+  function CreateOverlay({ onCreate, onCreateCancel, createStatusMessage }) {
+    const [titleValue, setTitleValue] = useState("");
+    const [descriptionValue, setDescriptionValue] = useState("");
+    const [releaseYearValue, setReleaseYearValue] = useState("");
+    const [watchedValue, setWatchedValue] = useState(false);
+
+    const handleTitleValueChange = (event) => {
+      setTitleValue(event.target.value);
+    };
+
+    const handleDescriptionChange = (event) => {
+      setDescriptionValue(event.target.value);
+    };
+
+    const handleReleaseYearValueChange = (event) => {
+      const value = event.target.value;
+      const intValue = value ? parseInt(value, 10) : null;
+      setReleaseYearValue(intValue);
+    };
+
+    const handleWatchedValueChange = (event) => {
+      const value = event.target.value;
+      setWatchedValue(value);
+    };
+
+    return (
+      <div className="overlay">
+        <div className="overlay-content">
+          <h2>Create Movie</h2>
+          <label>{createStatusMessage}</label>
+          <label htmlFor="create-title">Title:</label>
+          <input
+            id="create-title"
+            type="text"
+            defaultValue={titleValue}
+            onChange={handleTitleValueChange}
+          />
+          <label htmlFor="create-description">Description:</label>
+          <input
+            id="create-description"
+            type="text"
+            defaultValue={descriptionValue}
+            onChange={handleDescriptionChange}
+          />
+          <label htmlFor="create-release_year">Year:</label>
+          <input
+            id="create-release_year"
+            type="text"
+            defaultValue={releaseYearValue}
+            onChange={handleReleaseYearValueChange}
+          />
+          <label htmlFor="create-watched">Watched:</label>
+          <input
+            id="create-watched"
+            type="checkbox"
+            checked={watchedValue}
+            onChange={handleWatchedValueChange}
+          />
+          <button
+            onClick={() =>
+              onCreate({
+                title: titleValue,
+                description: descriptionValue,
+                release_year: releaseYearValue,
+                watched: watchedValue,
+              })
+            }
+          >
+            Create
+          </button>
+          <button onClick={onCreateCancel}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  CreateOverlay.propTypes = {
+    onCreate: PropTypes.func.isRequired,
+    onCreateCancel: PropTypes.func.isRequired,
+    createStatusMessage: PropTypes.string.isRequired,
+  };
+
   UpdateOverlay.propTypes = {
     movie: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -200,6 +324,7 @@ export function Table({ data, onDelete, onUpdate }) {
 
   return (
     <div className="container">
+      <button onClick={handleNewMovieButton}>New Movie</button>
       <div className="container">
         <table {...getTableProps()}>
           <thead>
@@ -237,6 +362,13 @@ export function Table({ data, onDelete, onUpdate }) {
           statusMessage={statusMessage}
         />
       )}
+      {createMovieDisplay && (
+        <CreateOverlay
+          onCreate={handleCreate}
+          onCreateCancel={handleCreateCancel}
+          createStatusMessage={createStatusMessage}
+        />
+      )}
     </div>
   );
 }
@@ -245,4 +377,5 @@ Table.propTypes = {
   data: PropTypes.array.isRequired,
   onDelete: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onCreate: PropTypes.func.isRequired,
 };
