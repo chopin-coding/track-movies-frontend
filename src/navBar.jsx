@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export function NavBar() {
   return (
-    <nav>
+    <nav className={"navbar"}>
       <h3>Movie Tracker</h3>
       <ul>
         <li>

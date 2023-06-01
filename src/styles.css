@@ -1,4 +1,5 @@
 
+
 .header {
     padding: 60px;
     text-align: center;
@@ -7,12 +8,135 @@
     font-size: 20px;
 }
 
+
+.container {
+    padding: 5px;
+}
+
 body {
     margin: 2px;
     background: #1E1E1E;
     font-family: Inter, sans-serif;
     color: #F8F1F1;
 
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.button-container button {
+    margin-right: 5px;
+}
+
+.delete-button {
+    font-size: 25px;
+}
+
+.edit-button {
+    font-size: 18px;
+}
+
+.search-button {
+    font-size: 20px;
+}
+
+::placeholder {
+    opacity: 0.15;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.field {
+    margin-bottom: 5px;
+}
+
+.search-type-selection {
+    margin-bottom: 5px;
+
+}
+
+.new-movie-button {
+    margin-bottom: 5px;
+
+}
+
+input[type="checkbox"] {
+    transform: scale(1.4);
+    /* Add more styles as needed */
+    accent-color: #1E1E1E;
+}
+
+input {
+    background-color: #1E1E1E;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+
+button, select {
+    background-color: #1E1E1E;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline;
+    font-size: 16px;
+}
+
+
+label {
+    padding: 10px;
+}
+
+
+a:visited { text-decoration: none; color: #F8F1F1;}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1E1E1E;
+    padding: 10px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin-left: 10px;
+}
+
+nav h3 {
+    margin: 0;
 }
 
 table {
@@ -30,6 +154,7 @@ td {
 
 table, th, td {
     border-color: #333333;
+    padding: 8px;
 }
 
 .overlay {
@@ -53,3 +178,4 @@ table, th, td {
 .overlay h2 {
     margin-top: 0;
 }
+

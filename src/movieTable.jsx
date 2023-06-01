@@ -39,9 +39,16 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
       {
         Header: "Actions",
         Cell: ({ row }) => (
-          <div>
-            <button onClick={() => handleDelete(row)}>Delete</button>
-            <button onClick={() => handleUpdateButton(row)}>Update</button>
+          <div className="button-container">
+            <button className="delete-button" onClick={() => handleDelete(row)}>
+              🗑
+            </button>
+            <button
+              className="edit-button"
+              onClick={() => handleUpdateButton(row)}
+            >
+              🖉
+            </button>
           </div>
         ),
       },
@@ -175,7 +182,7 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
     };
 
     const handleWatchedValueChange = (event) => {
-      const value = event.target.value;
+      const value = event.target.checked;
       setWatchedValue(value);
     };
 
@@ -184,50 +191,62 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
         <div className="overlay-content">
           <h2>Update Movie</h2>
           <label>{statusMessage}</label>
-          <label htmlFor="update-title">Title:</label>
-          <input
-            id="update-title"
-            type="text"
-            defaultValue={titleValue}
-            onChange={handleTitleValueChange}
-          />
-          <label htmlFor="update-description">Description:</label>
-          <input
-            id="update-description"
-            type="text"
-            defaultValue={descriptionValue}
-            onChange={handleDescriptionChange}
-          />
-          <label htmlFor="update-release_year">Year:</label>
-          <input
-            id="update-release_year"
-            type="text"
-            defaultValue={releaseYearValue}
-            onChange={handleReleaseYearValueChange}
-          />
-          <label htmlFor="update-watched">Watched:</label>
-          <input
-            id="update-watched"
-            type="checkbox"
-            checked={watchedValue}
-            onChange={handleWatchedValueChange}
-          />
-          <label htmlFor="update-id">ID:</label>
-          <input id="movie-ID" type="text" defaultValue={id} readOnly />
-          <button
-            onClick={() =>
-              onSave({
-                id: id,
-                title: titleValue,
-                description: descriptionValue,
-                release_year: releaseYearValue,
-                watched: watchedValue,
-              })
-            }
-          >
-            Update
-          </button>
-          <button onClick={onCancel}>Close</button>
+          <div>
+            <label htmlFor="update-title">Title:</label>
+            <input
+              id="update-title"
+              type="text"
+              defaultValue={titleValue}
+              onChange={handleTitleValueChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="update-description">Description:</label>
+            <input
+              id="update-description"
+              type="text"
+              defaultValue={descriptionValue}
+              onChange={handleDescriptionChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="update-release_year">Year:</label>
+            <input
+              id="update-release_year"
+              type="text"
+              defaultValue={releaseYearValue}
+              onChange={handleReleaseYearValueChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="update-watched">Watched:</label>
+            <input
+              id="update-watched"
+              type="checkbox"
+              checked={watchedValue}
+              onChange={handleWatchedValueChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="update-id">ID:</label>
+            <input id="movie-ID" type="text" defaultValue={id} readOnly />
+          </div>
+          <div className="action-buttons">
+            <button
+              onClick={() =>
+                onSave({
+                  id: id,
+                  title: titleValue,
+                  description: descriptionValue,
+                  release_year: releaseYearValue,
+                  watched: watchedValue,
+                })
+              }
+            >
+              Update
+            </button>
+            <button onClick={onCancel}>Close</button>
+          </div>
         </div>
       </div>
     );
@@ -254,7 +273,7 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
     };
 
     const handleWatchedValueChange = (event) => {
-      const value = event.target.value;
+      const value = event.target.checked;
       setWatchedValue(value);
     };
 
@@ -263,47 +282,60 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
         <div className="overlay-content">
           <h2>Create Movie</h2>
           <label>{createStatusMessage}</label>
-          <label htmlFor="create-title">Title:</label>
-          <input
-            id="create-title"
-            type="text"
-            defaultValue={titleValue}
-            onChange={handleTitleValueChange}
-          />
-          <label htmlFor="create-description">Description:</label>
-          <input
-            id="create-description"
-            type="text"
-            defaultValue={descriptionValue}
-            onChange={handleDescriptionChange}
-          />
-          <label htmlFor="create-release_year">Year:</label>
-          <input
-            id="create-release_year"
-            type="text"
-            defaultValue={releaseYearValue}
-            onChange={handleReleaseYearValueChange}
-          />
-          <label htmlFor="create-watched">Watched:</label>
-          <input
-            id="create-watched"
-            type="checkbox"
-            checked={watchedValue}
-            onChange={handleWatchedValueChange}
-          />
-          <button
-            onClick={() =>
-              onCreate({
-                title: titleValue,
-                description: descriptionValue,
-                release_year: releaseYearValue,
-                watched: watchedValue,
-              })
-            }
-          >
-            Create
-          </button>
-          <button onClick={onCreateCancel}>Close</button>
+          <div>
+            <label htmlFor="create-title">Title:</label>
+            <input
+              id="create-title"
+              type="text"
+              defaultValue={titleValue}
+              onChange={handleTitleValueChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="create-description">Description:</label>
+            <input
+              id="create-description"
+              type="text"
+              defaultValue={descriptionValue}
+              onChange={handleDescriptionChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="create-release_year">Year:</label>
+            <input
+              id="create-release_year"
+              type="text"
+              defaultValue={releaseYearValue}
+              onChange={handleReleaseYearValueChange}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="create-watched">Watched:</label>
+            <input
+              id="create-watched"
+              type="checkbox"
+              checked={watchedValue}
+              onChange={handleWatchedValueChange}
+            />
+          </div>
+
+          <div>
+            <button
+              onClick={() =>
+                onCreate({
+                  title: titleValue,
+                  description: descriptionValue,
+                  release_year: releaseYearValue,
+                  watched: watchedValue,
+                })
+              }
+            >
+              Create
+            </button>
+            <button onClick={onCreateCancel}>Close</button>
+          </div>
         </div>
       </div>
     );
@@ -324,8 +356,10 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
 
   return (
     <div className="container">
-      <button onClick={handleNewMovieButton}>New Movie</button>
-      <div className="container">
+      <div className="new-movie-button">
+        <button onClick={handleNewMovieButton}>New Movie</button>
+      </div>
+      <div>
         <table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup, index) => (
@@ -354,6 +388,7 @@ export function Table({ data, onDelete, onUpdate, onCreate }) {
           </tbody>
         </table>
       </div>
+
       {selectedMovie && (
         <UpdateOverlay
           movie={selectedMovie}
